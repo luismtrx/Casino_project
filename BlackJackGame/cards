@@ -1,0 +1,65 @@
+import numpy as np
+import random
+#This will become the base class for all classes
+class Cards:
+    #this is the constructor
+    def __init__(self, deck):
+        
+    
+        #function that holds the cards
+        cards()
+        
+        #function that shuffles the deck
+        shuffle_deck()
+        
+        #funtion that deals the cards
+        deal_card()
+
+def cards():
+    #this function will hold the cards
+    deck  = np.array ([["s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "sJ", "sQ", "sK", "sA"],
+                       ["c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "cJ", "cQ", "cK", "cA"],
+                       ["d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10", "dJ", "dQ", "dK", "dA"],
+                       ["h2", "h3", "h4", "h5", "h6", "h7", "h8", "h9", "h10", "hJ", "hQ", "hK", "hA"]])
+    
+    return deck
+
+def shuffle_deck():
+    #this function will shuffle the deck
+    
+    #bring in the cards to function and save then as deck
+    deck = cards()
+    rng = np.random.shuffle(deck)
+    rng.shuffle(deck)
+    return deck
+    
+def deal_card():
+    #this function will deal the cards
+    current_card = 0
+    def deal_player():
+        player_hand = random.sample(deck, 1)
+        current_card += 1
+        return player_hand, current_card
+    
+    def deal_dealer():
+            dealer_hand = random.sample(deck, 1)
+            current_card += 1
+            return dealer_hand, current_card
+        
+    deckSize = 52 - current_card
+    
+    if deckSize < 4:
+        print("Refreshing deck")
+        deck = shuffle_deck()
+        deck = cards()
+        player_hand = deck[0:2]
+        dealer_hand = deck[2:4]
+    else: 
+        deal_player()
+        deal_dealer()
+    return player_hand, dealer_hand
+    
+
+
+
+
