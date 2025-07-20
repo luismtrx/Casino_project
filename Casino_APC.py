@@ -5,9 +5,14 @@ import random
 import datetime
 import sys
 
-import casino.craps_main as c_main
-import casino.roulette_main as r_main
-import casino.slots_main as s_main
+
+from casino_stats import CasinoStats
+
+
+import craps_main as c_main
+import roulette_main as r_main
+import slots_main as s_main
+
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -48,12 +53,16 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS CASINO_STATS (
     ID INTEGER PRIMARY KEY,
     TOTAL_MADE REAL NOT NULL,
     TOTAL_PAYOUT REAL NOT NULL,
-    NUM_BETS_MADE INTEGER NOT NULL,
     NUM_GAMBLERS INTEGER NOT NULL,
-    CHEATERS_KICKED INTEGER NOT NULL
+    CHEATERS_KICKED INTEGER NOT NULL,
+    NUM_BETS_MADE INTEGER NOT NULL,
+    NUM_BETS_MADER INTEGER NOT NULL,
+    NUM_BETS_MADES INTEGER NOT NULL,
+    NUM_BETS_MADEC INTEGER NOT NULL
 );""")
+
 if cursor.execute("SELECT COUNT(*) FROM CASINO_STATS").fetchone()[0] == 0:
-    cursor.execute("INSERT INTO CASINO_STATS VALUES (1, 0, 0, 0, 0, 0)")
+    cursor.execute("INSERT INTO CASINO_STATS VALUES (1, 0, 0, 0, 0,0,0,0,0")
     database.commit()
 
 cursor.execute("""CREATE TABLE IF NOT EXISTS CHEATERS (
@@ -149,43 +158,6 @@ class Manager(User):
         super().__init__(row[0], row[1], "", None)
         self.username = row[1]
         self.password = row[2]
-
-
-class CasinoStats:
-    def __init__(self):
-        row = cursor.execute("SELECT * FROM CASINO_STATS WHERE ID=1").fetchone()
-        self.id = row[0]
-        self.total_made = row[1]
-        self.total_payout = row[2]
-        self.num_bets_made = row[3]
-        self.num_gamblers = row[4]
-        self.cheaters_kicked = row[5]
-
-    def add_bet(self, bet, payout):
-        self.total_made += bet
-        self.total_payout += payout
-        self.num_bets_made += 1
-        self._save()
-
-    def add_gambler(self):
-        self.num_gamblers += 1
-        self._save()
-
-    def kick_cheater(self):
-        self.cheaters_kicked += 1
-        self._save()
-
-    def add_game(self):
-        self.num_bets_made += 1
-        self._save()
-
-    def _save(self):
-        cursor.execute("""UPDATE CASINO_STATS SET
-            TOTAL_MADE=?, TOTAL_PAYOUT=?, NUM_BETS_MADE=?,
-            NUM_GAMBLERS=?, CHEATERS_KICKED=?
-            WHERE ID=1""", (self.total_made, self.total_payout, self.num_bets_made,
-            self.num_gamblers, self.cheaters_kicked))
-        database.commit()
 
 
 def main_menu():
@@ -336,8 +308,7 @@ def game_menu(gambler, parent, bal_var):
     tk.Button(game_win, text="Back", width=20, command=game_win.destroy).pack(pady=8)
 
 def view_player_stats(gambler):
-
-    msg = (
+    stats = (
         f"Name: {gambler.first_name} {gambler.last_name}\n"
         f"ID (Login): {gambler.id}\n"
         f"Birthyear: {gambler.birthyear}\n"
@@ -352,13 +323,13 @@ def view_player_stats(gambler):
     #         msg += f"{g[5][:16]} | {g[0]} | {'Win' if g[1] else 'Loss'} | Bet: ${g[2]:.2f} | Won: ${g[3]:.2f} | Cheated: {'Y' if g[4] else 'N'}\n"
     # else:
     #     msg += "\nNo games played yet."
-    messagebox.showinfo("Player Stats", msg)
+    messagebox.showinfo("Player Stats", stats)
 
     def show_W_L():
         total= gambler.wins+ gambler.losses
         if total==0:
             messagebox.showinfo("Chart","No games have been played yet." )
-            return
+           
         labels = ['Wins', 'Losses']
         sizes = [gambler.wins, gambler.losses]
         colors = ['green', 'red']
@@ -581,6 +552,11 @@ def manager_menu(username, parent):
 
 
 # reset_id()
+
+if __name__ == "__main__":
+    main_menu()
+
+
 
 if __name__ == "__main__":
     main_menu()
